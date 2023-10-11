@@ -91,6 +91,7 @@ func init() {
 		"set":          py.SetType,
 		"slice":        py.SliceType,
 		"staticmethod": py.StaticMethodType,
+		"property":     py.PropertyType,
 		"str":          py.StringType,
 		// "super":          py.SuperType,
 		"tuple": py.TupleType,

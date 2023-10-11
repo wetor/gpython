@@ -14,11 +14,24 @@ type Property struct {
 	Doc  string
 }
 
-var PropertyType = NewType("property", "property object")
+var PropertyType = ObjectType.NewType("property", "property object", PropertyNew, nil)
 
 // Type of this object
-func (o *Property) Type() *Type {
+func (p *Property) Type() *Type {
 	return PropertyType
+}
+
+func PropertyNew(metatype *Type, args Tuple, kwargs StringDict) (res Object, err error) {
+	var callable Object
+	err = UnpackTuple(args, kwargs, "property", 1, 1, &callable)
+	if err != nil {
+		return nil, err
+	}
+	return &Property{
+		Fget: func(self Object) (Object, error) {
+			return Call(callable, Tuple{self}, nil)
+		},
+	}, nil
 }
 
 func (p *Property) M__get__(instance, owner Object) (Object, error) {
