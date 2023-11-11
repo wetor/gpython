@@ -470,7 +470,33 @@ def fn():
 class A(B):
     pass
 """, "exec"),
-
+    ("""\
+@dec.func
+def fn():
+    pass
+""", "exec"),
+    ("""\
+@dec.func.func2
+def fn():
+    pass
+""", "exec"),
+    ("""\
+@dec.func()
+def fn():
+    pass
+""", "exec"),
+    ("""\
+@dec.func(a,b,c=d,*args,**kwargs)
+def fn():
+    pass
+""", "exec"),
+    ("""\
+@dec1.func
+@dec2.func()
+@dec3.func(a)
+def fn():
+    pass
+""", "exec"),
     # single input
     ("", "single", SyntaxError),
     ("\n", "single", SyntaxError),

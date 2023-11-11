@@ -136,7 +136,7 @@ func setCtxs(yylex yyLexer, exprs []ast.Expr, ctx ast.ExprContext) {
 %type <stmt> compound_stmt small_stmt expr_stmt del_stmt pass_stmt flow_stmt import_stmt global_stmt nonlocal_stmt assert_stmt break_stmt continue_stmt return_stmt raise_stmt yield_stmt import_name import_from while_stmt if_stmt for_stmt try_stmt with_stmt funcdef classdef classdef_or_funcdef decorated
 %type <op> augassign
 %type <expr> expr_or_star_expr expr star_expr xor_expr and_expr shift_expr arith_expr term factor power trailer atom test_or_star_expr test not_test lambdef test_nocond lambdef_nocond or_test and_test comparison testlist testlist_star_expr yield_expr_or_testlist yield_expr yield_expr_or_testlist_star_expr dictorsetmaker sliceop except_clause optional_return_type decorator
-%type <exprs> exprlist testlistraw comp_if comp_iter expr_or_star_exprs test_or_star_exprs tests test_colon_tests trailers equals_yield_expr_or_testlist_star_expr decorators
+%type <exprs> exprlist testlistraw comp_if comp_iter expr_or_star_exprs test_or_star_exprs tests test_colon_tests trailers equals_yield_expr_or_testlist_star_expr decorators decorator_names
 %type <cmpop> comp_op
 %type <comma> optional_comma
 %type <comprehensions> comp_for
@@ -330,16 +330,25 @@ optional_arglist_call:
 	}
 
 decorator:
-	'@' dotted_name optional_arglist_call NEWLINE
+	'@' NAME decorator_names optional_arglist_call NEWLINE
 	{
-		fn := &ast.Name{ExprBase: ast.ExprBase{Pos: $<pos>$}, Id: ast.Identifier($2), Ctx: ast.Load}
-		if $3 == nil {
-			$$ = fn
-		} else {
-			call := *$3
-			call.Func = fn
-			$$ = &call
+		var name ast.Expr = &ast.Name{ExprBase: ast.ExprBase{Pos: $<pos>$}, Id: ast.Identifier($2), Ctx: ast.Load}
+		if $3 != nil {
+                	name = applyTrailers(name, $3)
+                }
+		if $4 != nil {
+			name = applyTrailers(name, []ast.Expr{$4})
 		}
+		$$ = name
+	}
+
+decorator_names:
+	{
+		$$ = nil
+	}
+|	decorator_names '.' NAME
+	{
+		$$ = append($$, &ast.Attribute{ExprBase: ast.ExprBase{Pos: $<pos>$}, Attr: ast.Identifier($3), Ctx: ast.Load})
 	}
 
 decorators:

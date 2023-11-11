@@ -19,6 +19,10 @@ func TestVm(t *testing.T) {
 	pytest.RunTests(t, "tests")
 }
 
+func TestVm2(t *testing.T) {
+	pytest.RunTests(t, "tests2")
+}
+
 func BenchmarkVM(b *testing.B) {
 	pytest.RunBenchmarks(b, "benchmarks")
 }

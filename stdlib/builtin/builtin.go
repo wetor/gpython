@@ -81,12 +81,12 @@ func init() {
 		"filter":      py.FilterType,
 		"float":       py.FloatType,
 		"frozenset":   py.FrozenSetType,
-		// "property":       py.PropertyType,
-		"int":    py.IntType, // FIXME LongType?
-		"list":   py.ListType,
-		"map":    py.MapType,
-		"object": py.ObjectType,
-		"range":  py.RangeType,
+		"property":    py.PropertyType,
+		"int":         py.IntType, // FIXME LongType?
+		"list":        py.ListType,
+		"map":         py.MapType,
+		"object":      py.ObjectType,
+		"range":       py.RangeType,
 		// "reversed":       py.ReversedType,
 		"set":          py.SetType,
 		"slice":        py.SliceType,

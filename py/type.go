@@ -371,6 +371,31 @@ func (a *Type) IsSubtype(b *Type) bool {
 	}
 }
 
+// type_getattro
+func (t *Type) M__getattribute__(name string) (Object, error) {
+	metatype := t.Type()
+	/* Look for the attribute in the metatype */
+	meta_attribute := metatype.NativeGetAttrOrNil(name)
+	if meta_attribute != nil {
+		if I, ok := meta_attribute.(I__getattribute__); ok {
+			return I.M__getattribute__(name)
+		} else if res, ok, err := TypeCall1(meta_attribute, "__getattribute__", Object(String(name))); ok {
+			return res, err
+		}
+	}
+	/* No data descriptor found on metatype. Look in tp_dict of this
+	 * type and its bases */
+	attribute := t.NativeGetAttrOrNil(name)
+	if attribute != nil {
+		if I, ok := attribute.(I__getattribute__); ok {
+			return I.M__getattribute__(name)
+		} else if res, ok, err := TypeCall1(attribute, "__getattribute__", Object(String(name))); ok {
+			return res, err
+		}
+	}
+	return nil, ExceptionNewf(AttributeError, "type object '%s' has no attribute '%s'", t.Type().Name, name)
+}
+
 // Call type()
 func (t *Type) M__call__(args Tuple, kwargs StringDict) (Object, error) {
 	if t.New == nil {

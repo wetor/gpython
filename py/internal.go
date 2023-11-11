@@ -220,7 +220,9 @@ func DelItem(self Object, key Object) (Object, error) {
 func GetAttrString(self Object, key string) (res Object, err error) {
 	// Call __getattribute__ unconditionally if it exists
 	if I, ok := self.(I__getattribute__); ok {
-		return I.M__getattribute__(key)
+		if obj, err := I.M__getattribute__(key); err == nil {
+			return obj, err
+		}
 	} else if res, ok, err = TypeCall1(self, "__getattribute__", Object(String(key))); ok {
 		return res, err
 	}

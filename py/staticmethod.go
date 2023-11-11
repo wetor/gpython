@@ -14,7 +14,7 @@ Convert a function to be a static method.
 A static method does not receive an implicit first argument.
 To declare a static method, use this idiom:
 
-     class C:
+class C:
      def f(arg1, arg2, ...): ...
      f = staticmethod(f)
 
@@ -53,6 +53,11 @@ func StaticMethodNew(metatype *Type, args Tuple, kwargs StringDict) (res Object,
 
 // Read a staticmethod from a class - no bound method here
 func (c *StaticMethod) M__get__(instance, owner Object) (Object, error) {
+	return c.Callable, nil
+}
+
+// tp_descr_get
+func (c *StaticMethod) M__getattribute__(name string) (Object, error) {
 	return c.Callable, nil
 }
 
